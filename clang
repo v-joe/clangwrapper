@@ -7,7 +7,7 @@
 #also if libstdc++ in default path is too old
 
 #put into PATH before real clang/clang++
-#create link to of this script to clang++ (or cp clang clang++)
+#create link of this script to clang++ (or cp clang clang++)
 
 #clang-major.minor should not be wrapped
 
@@ -31,7 +31,7 @@ if '-c' in argv[1:] or '-o' in argv[1:]:
     ar = ''
     ar2 = ''
     for ia,a in enumerate(argv[1:]):
-	#skip command line parameters gcc and g++ don't understan
+	#skip command line parameters gcc and g++ don't understand
         if a!='-Qunused-arguments' and a!='-target' and argv[ia]!='-target':
             ar+=' "'+a+'"'
         ar2+=' "'+a+'"'
