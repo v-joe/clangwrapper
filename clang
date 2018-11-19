@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+#wrapper for clang enforcing libstdc++ headers/libraries used
+#can also be used to force compilation with g++ instead of clang++
+
+#written as a hack for scala-native so that compilation is possible
+#also if libstdc++ in default path is too old
+
+#put into PATH before real clang/clang++
+#create link to of this script to clang++ (or cp clang clang++)
+
+#clang-major.minor should not be wrapped
+
+
+########################adjust paths here######################
+#folder containing toolchain/libstdc++ headers/libraries to use
+toolchain = '/usr'
+#set cppflags if necessary: e.g. -I/path/include
+#could also specify optimization flags here
+cppflags = ''
+#set ldflags if necessary: e.g. -L/path/lib
+ldflags = ''
+#ldflags only used for clang++
+ldflagsclang = '-stdlib=libstdc++'
+#full path to real clang++
+clangpp = '/usr/bin/clang++'
+
+from sys import argv
+from os import system
+if '-c' in argv[1:] or '-o' in argv[1:]:
+    ar = ''
+    ar2 = ''
+    for ia,a in enumerate(argv[1:]):
+	#skip command line parameters gcc and g++ don't understan
+        if a!='-Qunused-arguments' and a!='-target' and argv[ia]!='-target':
+            ar+=' "'+a+'"'
+        ar2+=' "'+a+'"'
+    #change following line to
+    #s = 'true %s/bin/g++ %s %s %s || true %s/bin/gcc %s %s %s || %s %s %s %s --gcc-toolchain=%s %s' % (toolchain,cppflags,ldflags,ar,toolchain,cppflags,ldflags,ar,clangpp,cppflags,ldflags,ldflagsclang,toolchain,ar2)
+    #if g++ and gcc should not be used, but only clang++
+    s = '%s/bin/g++ %s %s %s || %s/bin/gcc %s %s %s || %s %s %s %s --gcc-toolchain=%s %s' % (toolchain,cppflags,ldflags,ar,toolchain,cppflags,ldflags,ar,clangpp,cppflags,ldflags,ldflagsclang,toolchain,ar2)
+else:
+    #if no compilation nor linking, simply run clang++ without any hacks
+    s = clangpp
+    for a in argv[1:]:
+        s+=' "'+a+'"'
+exit(system(s))
